@@ -29,16 +29,25 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Alert.config
-        |> Alert.dismissableWithAnimation AlertMsg
-        |> getAlertColour model
-        |> Alert.children
-            [ Alert.h4 [] [ text "Alert heading" ]
-            , text "This info message has a "
-            , Alert.link [ href "javascript:void()" ] [ text "link" ]
-            , p [] [ text "Followed by a paragraph behaving as you'd expect." ]
-            ]
-        |> Alert.view model.alertVisibility
+  case model.alertType of
+    Error err ->
+      Alert.config
+          |> Alert.dismissableWithAnimation AlertMsg
+          |> Alert.danger
+          |> Alert.children
+              [ Alert.h4 [] [ text "Error occurred!" ]
+              , text err
+              ]
+          |> Alert.view model.alertVisibility
+    Success ->
+      Alert.config
+          |> Alert.dismissableWithAnimation AlertMsg
+          |> Alert.success
+          |> Alert.children
+              [ Alert.h4 [] [ text "Success!" ]
+              , text "All changes have been saved"
+              ]
+          |> Alert.view model.alertVisibility
 
 
 -- Subscriptions are only needed when you choose to use dismissableWithAnimation
@@ -46,9 +55,3 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Alert.subscriptions model.alertVisibility AlertMsg
-
-getAlertColour : Model -> Alert.Config Msg -> Alert.Config Msg
-getAlertColour model =
-  case model.alertType of
-    Error _ -> Alert.danger
-    Success -> Alert.success
