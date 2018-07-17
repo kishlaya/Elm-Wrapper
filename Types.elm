@@ -4,6 +4,8 @@ import Json.Decode
 import Json.Encode exposing (Value)
 import Json.Helpers exposing (..)
 
+type Alert = Error String | Success
+
 type alias Attachment =
   { fallback: String
   , footer: String

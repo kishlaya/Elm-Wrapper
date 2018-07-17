@@ -3,6 +3,7 @@ module Main exposing (..)
 import Types exposing (..)
 import Pages.Feature as Feature
 import Components.Loading as Loading
+import Components.Alert as Alert
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
@@ -20,26 +21,34 @@ main =
 type alias Model =
   { featureModel : Feature.Model
   , loadingModel : Loading.Model
-  , done : Bool
+  , alertModel : Alert.Model
   }
 
 type Msg
   = FeatureMsg Feature.Msg
   | LoadingMsg Loading.Msg
+  | AlertMsg Alert.Msg
 
 init : (Model, Cmd Msg)
 init =
   let
     (featureModel_, featureCmd_) = Feature.init
     (loadingModel_, loadingCmd_) = Loading.init
+    (alertModel_, alertCmd_) = Alert.init
   in
-    ({ loadingModel = loadingModel_, featureModel = featureModel_, done = False }, Cmd.map FeatureMsg featureCmd_)
+    ({ featureModel = featureModel_, loadingModel = loadingModel_, alertModel = alertModel_ }
+    , Cmd.batch [ Cmd.map FeatureMsg featureCmd_
+                , Cmd.map LoadingMsg loadingCmd_
+                , Cmd.map AlertMsg alertCmd_
+                ]
+    )
 
 view : Model -> Html Msg
 view model =
   div []
     [ CDN.stylesheet
     , Html.map LoadingMsg <| Loading.view model.loadingModel
+    , Html.map AlertMsg <| Alert.view model.alertModel
     , Html.map FeatureMsg <| Feature.view model.featureModel
     ]
 
@@ -56,3 +65,8 @@ update msg model =
         (newLoadingModel, newCmd) = Loading.update loadingMsg model.loadingModel
       in
         ({ model | loadingModel = newLoadingModel }, Cmd.map LoadingMsg newCmd)
+    AlertMsg alertMsg ->
+      let
+        (newAlertModel, newCmd) = Alert.update alertMsg model.alertModel
+      in
+        ({ model | alertModel = newAlertModel }, Cmd.map AlertMsg newCmd)
