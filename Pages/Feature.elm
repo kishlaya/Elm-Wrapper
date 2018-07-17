@@ -48,7 +48,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, done = True, alertType = Success }, Cmd.none)
-    ShowJoke (Err err) -> ({ model | joke = emptyAttachment.text, done = False, alertType = Error (toString err) }, Cmd.none)
+    ShowJoke (Err err) -> ({ model | joke = emptyAttachment.text, done = True, alertType = Error (toString err) }, Cmd.none)
     NextJoke -> ({ model | joke = emptyAttachment.text, done = False, alertType = None }, load)
 
 load : Cmd Msg

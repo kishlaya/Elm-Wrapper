@@ -45,7 +45,7 @@ view model =
           |> Alert.success
           |> Alert.children
               [ Alert.h4 [] [ text "Success!" ]
-              , text "All changes have been saved"
+              , text "Joke generated successfully"
               ]
           |> Alert.view model.alertVisibility
     None ->
