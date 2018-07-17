@@ -20,6 +20,7 @@ main =
 type alias Model =
   { featureModel : Feature.Model
   , loadingModel : Loading.Model
+  , done : Bool
   }
 
 type Msg
@@ -32,7 +33,7 @@ init =
     (featureModel_, featureCmd_) = Feature.init
     (loadingModel_, loadingCmd_) = Loading.init
   in
-    ({ loadingModel = loadingModel_, featureModel = featureModel_ }, Cmd.map FeatureMsg featureCmd_)
+    ({ loadingModel = loadingModel_, featureModel = featureModel_, done = False }, Cmd.map FeatureMsg featureCmd_)
 
 view : Model -> Html Msg
 view model =

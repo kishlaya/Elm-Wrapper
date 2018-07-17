@@ -10,12 +10,13 @@ import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Card as Card
 import Bootstrap.Card.Block as Block
+import Bootstrap.Button as Button
 
 type alias Model =
   { joke: String
-  , loading: Bool
+  , done: Bool
   }
-emptyModel = { joke = emptyAttachment.text, loading = False }
+emptyModel = { joke = emptyAttachment.text, done = False }
 
 emptyAttachment =
   { fallback = ""
@@ -23,7 +24,7 @@ emptyAttachment =
   , text = "<< fetching joke >>"
   }
 
-type Msg = ShowJoke (Result Http.Error Joke)
+type Msg = NextJoke | ShowJoke (Result Http.Error Joke)
 
 init : (Model, Cmd Msg)
 init = (emptyModel, load)
@@ -36,6 +37,8 @@ view model =
         |> Card.footer [] [ text "Using icanhazdadjoke" ]
         |> Card.block []
             [ Block.text [] [ text model.joke ]
+            , Block.custom
+                <| Button.button [Button.primary, Button.onClick NextJoke] [text "Next one"]
             ]
         |> Card.view
     ]
@@ -43,7 +46,8 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, loading = True }, Cmd.none)
+    ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, done = True }, Cmd.none)
+    NextJoke -> ({ model | joke = emptyAttachment.text, done = True }, load)
     _ -> model ! []
 
 load : Cmd Msg

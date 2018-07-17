@@ -9,13 +9,13 @@ import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Progress as Progress
 
-type alias Model = { loading: Bool }
+type alias Model = { done: Bool }
 
 type Msg = NoOp
 
 view : Model -> Html Msg
 view model =
-  case model.loading of
+  case model.done of
     True ->
       div [] []
     False ->
@@ -27,7 +27,7 @@ view model =
 
 
 init : (Model, Cmd Msg)
-init = ({ loading = False }, Cmd.none)
+init = ({ done = False }, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = (model, Cmd.none)
