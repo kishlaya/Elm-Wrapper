@@ -63,15 +63,6 @@ load =
   let
     url = "https://randomuser.me/api"
     request = Http.get url jsonDecUser
-      -- Http.request
-      --   { method = "GET"
-      --   , headers = []
-      --   , url = url
-      --   , body = Http.emptyBody
-      --   , expect = Http.expectString
-      --   , timeout = Nothing
-      --   , withCredentials = False
-      --   }
   in
     Http.send ShowUser request
 
