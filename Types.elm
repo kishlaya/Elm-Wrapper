@@ -4,6 +4,8 @@ import Json.Decode
 import Json.Encode exposing (Value)
 import Json.Helpers exposing (..)
 
+type LoadingCounter = Increment | Decrement | Stay
+
 type Alert = Error String | Success | None
 
 type alias Joke =

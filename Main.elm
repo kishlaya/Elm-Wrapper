@@ -78,7 +78,7 @@ update msg model =
         oldAlertModel = model.alertModel
       in
         ( { model | featureModel = newFeatureModel
-                  , loadingModel = { oldLoadingModel | done = newFeatureModel.done }
+                  , loadingModel = { oldLoadingModel | done = updateLoader oldLoadingModel.done newFeatureModel.loadingCounter }
                   , alertModel   = { oldAlertModel | alertVisibility = shown, alertType = newFeatureModel.alertType }
           }
         , Cmd.map FeatureMsg newCmd
@@ -90,7 +90,7 @@ update msg model =
         oldAlertModel = model.alertModel
       in
         ( { model | fakeuserModel = newFakeuserModel
-                  , loadingModel  = { oldLoadingModel | done = newFakeuserModel.done }
+                  , loadingModel  = { oldLoadingModel | done = updateLoader oldLoadingModel.done newFakeuserModel.loadingCounter }
                   , alertModel    = { oldAlertModel | alertVisibility = shown, alertType = newFakeuserModel.alertType }
           }
         , Cmd.map FakeUserMsg newCmd
@@ -109,3 +109,10 @@ update msg model =
       model ! [ Cmd.map FakeUserMsg <| Task.perform (always FakeUser.NextUser) (Task.succeed 0)
               , Cmd.map FeatureMsg <| Task.perform (always Feature.NextJoke) (Task.succeed 0)
               ]
+
+updateLoader : Int -> LoadingCounter -> Int
+updateLoader n lc =
+  case lc of
+    Increment -> n+1
+    Decrement -> n-1
+    Stay -> n

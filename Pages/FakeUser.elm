@@ -16,22 +16,22 @@ import Json.Decode
 type alias Model =
   { user: User
   , allowNext : Bool
-  , done: Bool
+  , loadingCounter: LoadingCounter
   , alertType : Alert
   }
 
 emptyUser : User
 emptyUser =
   { title = ""
-  , first = "Anony"
-  , last = "Mous"
+  , first = "Anonymous"
+  , last = ""
   }
-emptyModel = { user = emptyUser, allowNext = True, done = False, alertType = None }
+emptyModel = { user = emptyUser, allowNext = False, loadingCounter = Stay, alertType = None }
 
 type Msg = NextUser | ShowUser (Result Http.Error (List User))
 
 init : (Model, Cmd Msg)
-init = (emptyModel, load)
+init = (emptyModel, Cmd.none)
 
 view : Model -> Html Msg
 view model =
@@ -54,9 +54,9 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    ShowUser (Ok result) -> ({ model | user = Maybe.withDefault emptyUser (List.head result), done = True, alertType = Success, allowNext = True }, Cmd.none)
-    ShowUser (Err err) -> (Debug.log ("toString err") { model | user = emptyUser, done = True, alertType = Error (toString err), allowNext = True }, Cmd.none)
-    NextUser -> ({ model | user = emptyUser, done = False, alertType = None, allowNext = False }, load)
+    ShowUser (Ok result) -> ({ model | user = Maybe.withDefault emptyUser (List.head result), loadingCounter = Decrement, alertType = Success, allowNext = True }, Cmd.none)
+    ShowUser (Err err) -> ({ model | user = emptyUser, loadingCounter = Decrement, alertType = Error (toString err), allowNext = True }, Cmd.none)
+    NextUser -> ({ model | user = emptyUser, loadingCounter = Increment, alertType = None, allowNext = False }, load)
 
 load : Cmd Msg
 load =

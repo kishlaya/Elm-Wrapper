@@ -15,17 +15,17 @@ import Bootstrap.Button as Button
 type alias Model =
   { joke: String
   , allowNext : Bool
-  , done: Bool
+  , loadingCounter: LoadingCounter
   , alertType : Alert
   }
 
-emptyJoke = "Fetching joke..."
-emptyModel = { joke = emptyJoke, allowNext = True, done = False, alertType = None }
+emptyJoke = "Click button for laughter"
+emptyModel = { joke = emptyJoke, allowNext = False, loadingCounter = Stay, alertType = None }
 
 type Msg = NextJoke | ShowJoke (Result Http.Error Joke)
 
 init : (Model, Cmd Msg)
-init = (emptyModel, load)
+init = (emptyModel, Cmd.none)
 
 view : Model -> Html Msg
 view model =
@@ -48,9 +48,9 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    ShowJoke (Ok result) -> ({ model | joke = result.joke, done = True, alertType = Success, allowNext = True }, Cmd.none)
-    ShowJoke (Err err) -> ({ model | joke = emptyJoke, done = True, alertType = Error (toString err), allowNext = True }, Cmd.none)
-    NextJoke -> ({ model | joke = emptyJoke, done = False, alertType = None, allowNext = False }, load)
+    ShowJoke (Ok result) -> ({ model | joke = result.joke, loadingCounter = Decrement, alertType = Success, allowNext = True }, Cmd.none)
+    ShowJoke (Err err) -> ({ model | joke = emptyJoke, loadingCounter = Decrement, alertType = Error (toString err), allowNext = True }, Cmd.none)
+    NextJoke -> ({ model | joke = emptyJoke, loadingCounter = Increment, alertType = None, allowNext = False }, load)
 
 load : Cmd Msg
 load =
