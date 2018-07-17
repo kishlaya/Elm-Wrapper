@@ -5,12 +5,14 @@ import Pages.Feature as Feature
 import Pages.FakeUser as FakeUser
 import Components.Loading as Loading
 import Components.Alert as Alert
+import Task
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
 import Navigation
 import Bootstrap.Grid as Grid
 import Bootstrap.CDN as CDN
+import Bootstrap.Button as Button
 import Bootstrap.Alert exposing (shown)
 
 main =
@@ -33,6 +35,7 @@ type Msg
   | FakeUserMsg FakeUser.Msg
   | LoadingMsg Loading.Msg
   | AlertMsg Alert.Msg
+  | Generate
 
 init : (Model, Cmd Msg)
 init =
@@ -61,6 +64,7 @@ view model =
             [ Grid.col [] [ Html.map FeatureMsg <| Feature.view model.featureModel ]
             , Grid.col [] [ Html.map FakeUserMsg <| FakeUser.view model.fakeuserModel ]
             ]
+        , Button.button [ Button.primary, Button.onClick Generate ] [ text "Generate" ]
         ]
     ]
 
@@ -101,3 +105,7 @@ update msg model =
         (newAlertModel, newCmd) = Alert.update alertMsg model.alertModel
       in
         ({ model | alertModel = newAlertModel }, Cmd.map AlertMsg newCmd)
+    Generate ->
+      model ! [ Cmd.map FakeUserMsg <| Task.perform (always FakeUser.NextUser) (Task.succeed 0)
+              , Cmd.map FeatureMsg <| Task.perform (always Feature.NextJoke) (Task.succeed 0)
+              ]
