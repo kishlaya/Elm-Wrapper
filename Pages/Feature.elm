@@ -33,7 +33,7 @@ view : Model -> Html Msg
 view model =
   Grid.container []
     [ Card.config [ Card.outlineDark ]
-        |> Card.headerH1 [] [ text "Joke of the day" ]
+        |> Card.headerH1 [] [ text "Joke generator" ]
         |> Card.footer [] [ text "Using icanhazdadjoke" ]
         |> Card.block []
             [ Block.text [] [ text model.joke ]
