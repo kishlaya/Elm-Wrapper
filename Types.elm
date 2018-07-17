@@ -6,28 +6,15 @@ import Json.Helpers exposing (..)
 
 type Alert = Error String | Success | None
 
-type alias Attachment =
-  { fallback: String
-  , footer: String
-  , text: String
-  }
-
 type alias Joke =
-  { attachments: List Attachment
-  , response_type: String
-  , username: String
+  { id: String
+  , joke: String
+  , status: Int
   }
-
-jsonDecAttachment : Json.Decode.Decoder ( Attachment )
-jsonDecAttachment =
-  ("fallback" := Json.Decode.string) >>= \pfallback ->
-  ("footer" := Json.Decode.string) >>= \pfooter ->
-  ("text" := Json.Decode.string) >>= \ptext ->
-  Json.Decode.succeed {fallback = pfallback, footer = pfooter, text = ptext}
 
 jsonDecJoke : Json.Decode.Decoder ( Joke )
 jsonDecJoke =
-   ("attachments" := Json.Decode.list (jsonDecAttachment)) >>= \pattachments ->
-   ("response_type" := Json.Decode.string) >>= \presponse_type ->
-   ("username" := Json.Decode.string) >>= \pusername ->
-   Json.Decode.succeed {attachments = pattachments, response_type = presponse_type, username = pusername}
+  ("id" := Json.Decode.string) >>= \pid ->
+  ("joke" := Json.Decode.string) >>= \pjoke ->
+  ("status" := Json.Decode.int) >>= \pstatus ->
+  Json.Decode.succeed {id = pid, joke = pjoke, status = pstatus}

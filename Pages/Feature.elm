@@ -18,13 +18,9 @@ type alias Model =
   , done: Bool
   , alertType : Alert
   }
-emptyModel = { joke = emptyAttachment.text, allowNext = True, done = False, alertType = None }
 
-emptyAttachment =
-  { fallback = ""
-  , footer = ""
-  , text = "<< fetching joke >>"
-  }
+emptyJoke = "Fetching joke..."
+emptyModel = { joke = emptyJoke, allowNext = True, done = False, alertType = None }
 
 type Msg = NextJoke | ShowJoke (Result Http.Error Joke)
 
@@ -52,17 +48,23 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, done = True, alertType = Success, allowNext = True }, Cmd.none)
-    ShowJoke (Err err) -> ({ model | joke = emptyAttachment.text, done = True, alertType = Error (toString err), allowNext = True }, Cmd.none)
-    NextJoke -> ({ model | joke = emptyAttachment.text, done = False, alertType = None, allowNext = False }, load)
+    ShowJoke (Ok result) -> ({ model | joke = result.joke, done = True, alertType = Success, allowNext = True }, Cmd.none)
+    ShowJoke (Err err) -> ({ model | joke = emptyJoke, done = True, alertType = Error (toString err), allowNext = True }, Cmd.none)
+    NextJoke -> ({ model | joke = emptyJoke, done = False, alertType = None, allowNext = False }, load)
 
 load : Cmd Msg
 load =
   let
-    url = "https://icanhazdadjoke.com/slack"
-    request = Http.get url jsonDecJoke
+    url = "https://icanhazdadjoke.com/"
+    request =
+      Http.request
+        { method = "GET"
+        , headers = [Http.header "Accept" "application/json"]
+        , url = url
+        , body = Http.emptyBody
+        , expect = Http.expectJson jsonDecJoke
+        , timeout = Nothing
+        , withCredentials = False
+        }
   in
     Http.send ShowJoke request
-
-getJoke : Joke -> String
-getJoke = .text << Maybe.withDefault emptyAttachment << List.head << .attachments
