@@ -19,7 +19,7 @@ type Msg
 
 init : (Model, Cmd Msg)
 init =
-    ( { alertVisibility = Alert.shown, alertType = Success }, Cmd.none )
+    ( { alertVisibility = Alert.shown, alertType = None }, Cmd.none )
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
