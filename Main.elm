@@ -9,6 +9,7 @@ import Html.Attributes exposing (..)
 import Html.Events as Events
 import Navigation
 import Bootstrap.CDN as CDN
+import Bootstrap.Alert exposing (shown)
 
 main =
   Html.program {
@@ -58,8 +59,15 @@ update msg model =
     FeatureMsg featureMsg ->
       let
         (newFeatureModel, newCmd) = Feature.update featureMsg model.featureModel
+        oldLoadingModel = model.loadingModel
+        oldAlertModel = model.alertModel
       in
-        ({ model | featureModel = newFeatureModel }, Cmd.map FeatureMsg newCmd)
+        ( { model | featureModel = newFeatureModel
+                  , loadingModel = { oldLoadingModel | done = newFeatureModel.done }
+                  , alertModel   = { oldAlertModel | alertVisibility = shown, alertType = newFeatureModel.alertType }
+          }
+        , Cmd.map FeatureMsg newCmd
+        )
     LoadingMsg loadingMsg ->
       let
         (newLoadingModel, newCmd) = Loading.update loadingMsg model.loadingModel
