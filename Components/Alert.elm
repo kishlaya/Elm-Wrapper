@@ -48,6 +48,8 @@ view model =
               , text "All changes have been saved"
               ]
           |> Alert.view model.alertVisibility
+    None ->
+      div [] []
 
 
 -- Subscriptions are only needed when you choose to use dismissableWithAnimation
