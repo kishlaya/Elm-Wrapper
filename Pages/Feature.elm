@@ -14,10 +14,11 @@ import Bootstrap.Button as Button
 
 type alias Model =
   { joke: String
+  , allowNext : Bool
   , done: Bool
   , alertType : Alert
   }
-emptyModel = { joke = emptyAttachment.text, done = False, alertType = None }
+emptyModel = { joke = emptyAttachment.text, allowNext = True, done = False, alertType = None }
 
 emptyAttachment =
   { fallback = ""
@@ -39,7 +40,11 @@ view model =
         |> Card.block []
             [ Block.text [] [ text model.joke ]
             , Block.custom
-                <| Button.button [Button.primary, Button.onClick NextJoke] [text "Next one"]
+                <| Button.button
+                    [ Button.primary
+                    , Button.onClick NextJoke
+                    , Button.disabled <| not (model.allowNext)
+                    ] [text "Next one"]
             ]
         |> Card.view
     ]
@@ -47,9 +52,9 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, done = True, alertType = Success }, Cmd.none)
-    ShowJoke (Err err) -> ({ model | joke = emptyAttachment.text, done = True, alertType = Error (toString err) }, Cmd.none)
-    NextJoke -> ({ model | joke = emptyAttachment.text, done = False, alertType = None }, load)
+    ShowJoke (Ok joke) -> ({ model | joke = getJoke joke, done = True, alertType = Success, allowNext = True }, Cmd.none)
+    ShowJoke (Err err) -> ({ model | joke = emptyAttachment.text, done = True, alertType = Error (toString err), allowNext = True }, Cmd.none)
+    NextJoke -> ({ model | joke = emptyAttachment.text, done = False, alertType = None, allowNext = False }, load)
 
 load : Cmd Msg
 load =
