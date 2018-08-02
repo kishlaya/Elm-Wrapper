@@ -1,7 +1,7 @@
 module Test
   exposing (..)
 
-import Wrapper
+import HttpWrapper
 import Html exposing (..)
 import Http
 import Task
@@ -20,13 +20,13 @@ main =
 type alias Model = Data
 
 type Msg
-  = WrapperMsg (Wrapper.Msg Data)
+  = WrapperMsg (HttpWrapper.HttpResult Data)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    WrapperMsg (Wrapper.HttpResult (Ok result)) -> result ! []
-    WrapperMsg (Wrapper.HttpResult (Err err)) -> model ! []
+    WrapperMsg (HttpWrapper.HttpResult (Ok result)) -> result ! []
+    WrapperMsg (HttpWrapper.HttpResult (Err err)) -> model ! []
 
 init : (Model, Cmd Msg)
 init = (emptyData, load)
@@ -44,7 +44,10 @@ load =
     url = "https://jsonplaceholder.typicode.com/posts/1"
     request = Http.get url jsonDecData
   in
-    Wrapper.send WrapperMsg request
+    HttpWrapper.send WrapperMsg request
+
+
+-- Custom Data encodings/decodings
 
 type alias Data =
   { userId : Int
