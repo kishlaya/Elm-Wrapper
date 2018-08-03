@@ -1,4 +1,4 @@
-module Test
+module Main
   exposing (..)
 
 import HttpWrapper
